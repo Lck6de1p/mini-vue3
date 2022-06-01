@@ -1,7 +1,5 @@
 import { extend } from "./shared";
 
-
-
 let activeEffect;
 let shouldTrack;
 
@@ -58,7 +56,7 @@ export function track(target, key) {
     dep = new Set();
     depsMap.set(key, dep)
   }
-
+  
   // 已经在dep中了
   if (dep.has(activeEffect)) return;
   dep.add(activeEffect);
@@ -92,8 +90,6 @@ export function effect(fn, options: any = {}) {
   runner.effect = _effect;
   return runner;
 }
-
-
 
 export function stop(runner) {
   runner.effect.stop();

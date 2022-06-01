@@ -37,10 +37,12 @@ function createSetter() {
     return res;
   };
 }
+
 export const mutableHandlers = {
   get,
   set,
 };
+
 export const readonlyHandlers = {
   get: readonlyGet,
   set(target, key, value) {
