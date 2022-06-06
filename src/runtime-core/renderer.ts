@@ -21,13 +21,14 @@ function patch(vnode, container) {
 function processElement(vnode, container) {
   mountElement(vnode, container);
 }
+
 function mountElement(vnode, container) {
   const el = document.createElement(vnode.type);
   const { children, props } = vnode;
   if (typeof children === 'string') {
     el.textContent = children;
   } else if (Array.isArray(children)) {
-    mountChildren(vnode, container)
+    mountChildren(vnode, el)
   }
   // props
   for (const key in props) {

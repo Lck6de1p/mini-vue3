@@ -7,9 +7,11 @@ export const App = {
       "div",
       {
         id: "root",
-        class: ["red"],
       },
-      [h("p", { id: "p", class: ["blue", "big"] }, "蓝色"), h("p", { id: "p", class: ["red"] }, "红色")]
+      [
+        h("p", { id: "p", class: ["blue", "big"] }, "蓝色"),
+        h("p", { id: "p", class: ["red"] }, "红色"),
+      ]
     );
   },
   setup() {
