@@ -15,7 +15,6 @@ export function setUpComponent(instance) {
 function setupStateForComponent(instance) {
   const Component = instance.type;
 
-
   const { setup } = Component;
 
   if (setup) {
@@ -32,7 +31,7 @@ function handleSetupResult(instance, setupResult) {
   if (typeof setupResult === 'object') {
     instance.setupState = setupResult;
   }
-
+  console.log(instance, 'e')
   finishComponentsSetUp(instance);
 }
 

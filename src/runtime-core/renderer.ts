@@ -1,3 +1,4 @@
+import { isObject } from "../reactivity/shared/index";
 import { createComponentInstance, setUpComponent } from "./component";
 
 export function render(vnode, container) {
@@ -7,16 +8,39 @@ export function render(vnode, container) {
 }
 
 function patch(vnode, container) {
-  // TODO 判断vnode是不是element
+  if (isObject(vnode.type)) {
+    // 处理组件
+    processComponent(vnode, container);
+  } else {
+    // 处理element
+    processElement(vnode, container);
+  }
 
-  // 是element
-  processElement();
-
-  // 处理组件
-  processComponent(vnode, container);
 }
 
-function processElement() {
+function processElement(vnode, container) {
+  mountElement(vnode, container);
+}
+function mountElement(vnode, container) {
+  const el = document.createElement(vnode.type);
+  const { children, props } = vnode;
+  if (typeof children === 'string') {
+    el.textContent = children;
+  } else if (Array.isArray(children)) {
+    mountChildren(vnode, container)
+  }
+  // props
+  for (const key in props) {
+    const val = props[key]
+    el.setAttribute(key, val);
+  }
+  container.append(el);
+}
+
+function mountChildren(vnode, container) {
+  vnode.children.forEach(v => {
+    patch(v, container);
+  })
 }
 
 function processComponent(vnode: any, container: any) {
@@ -25,6 +49,7 @@ function processComponent(vnode: any, container: any) {
 
 function mountComponent(vnode: any, container) {
   const instance = createComponentInstance(vnode);
+  console.log(instance, 'instance')
   setUpComponent(instance);
 
   setupRenderEffect(instance, container);
