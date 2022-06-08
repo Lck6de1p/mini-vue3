@@ -15,7 +15,6 @@ function patch(vnode, container) {
     // 处理element
     processElement(vnode, container);
   }
-
 }
 
 function processElement(vnode, container) {
@@ -23,25 +22,27 @@ function processElement(vnode, container) {
 }
 
 function mountElement(vnode, container) {
-  const el = document.createElement(vnode.type);
+  const el = (vnode.el = document.createElement(vnode.type));
+
   const { children, props } = vnode;
-  if (typeof children === 'string') {
+
+  if (typeof children === "string") {
     el.textContent = children;
   } else if (Array.isArray(children)) {
-    mountChildren(vnode, el)
+    mountChildren(vnode, el);
   }
   // props
   for (const key in props) {
-    const val = props[key]
+    const val = props[key];
     el.setAttribute(key, val);
   }
   container.append(el);
 }
 
 function mountChildren(vnode, container) {
-  vnode.children.forEach(v => {
+  vnode.children.forEach((v) => {
     patch(v, container);
-  })
+  });
 }
 
 function processComponent(vnode: any, container: any) {
@@ -50,15 +51,19 @@ function processComponent(vnode: any, container: any) {
 
 function mountComponent(vnode: any, container) {
   const instance = createComponentInstance(vnode);
-  console.log(instance, 'instance')
+  console.log(instance, "instance");
   setUpComponent(instance);
 
-  setupRenderEffect(instance, container);
+  setupRenderEffect(instance, vnode, container);
 }
 
-function setupRenderEffect(instance, container) {
-  const subTree = instance.render();
+function setupRenderEffect(instance, vnode, container) {
+  const { proxy } = instance;
+  const subTree = instance.render.call(proxy);
 
   // vnode -> element -> mountElement
   patch(subTree, container);
+
+  // 所有element mount
+  vnode.el = subTree.el;
 }
