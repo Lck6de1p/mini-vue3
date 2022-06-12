@@ -9,6 +9,12 @@ export const App = {
       "div",
       {
         id: "root",
+        onClick() {
+          console.log('click')
+        },
+        onMousedown() {
+          console.log('mouseDown')
+        },
       },
       [
         h("p", { id: "p", class: ["blue", "big"] }, "蓝色"),
