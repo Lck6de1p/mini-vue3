@@ -65,8 +65,8 @@ function processComponent(vnode: any, container: any) {
 }
 
 function mountComponent(vnode: any, container) {
+  
   const instance = createComponentInstance(vnode);
-  console.log(instance, "instance");
   setUpComponent(instance);
 
   setupRenderEffect(instance, vnode, container);
