@@ -1,6 +1,7 @@
 // import { isObject } from "../shared/index";
 import { ShapeFlags } from "../shared/ShapeFlags";
 import { createComponentInstance, setUpComponent } from "./component";
+import { Fragment, Text } from "./vnode";
 
 export function render(vnode, container) {
   // 调用patch方法
@@ -9,17 +10,37 @@ export function render(vnode, container) {
 }
 
 function patch(vnode, container) {
-  const { shapeFlag } = vnode;
+  const { shapeFlag, type } = vnode;
   // debugger
 
-
-  if (shapeFlag & ShapeFlags.STATEFUL_COMPONENT) {
-    // 处理组件
-    processComponent(vnode, container);
-  } else if (shapeFlag & ShapeFlags.ELEMENT) {
-    // 处理element
-    processElement(vnode, container);
+  switch (type) {
+    case Fragment:
+      processFragment(vnode, container);
+      break;
+    case Text:
+      processTextNode(vnode, container);
+      break;
+    default:
+      if (shapeFlag & ShapeFlags.STATEFUL_COMPONENT) {
+        // 处理组件
+        processComponent(vnode, container);
+      } else if (shapeFlag & ShapeFlags.ELEMENT) {
+        // 处理element
+        processElement(vnode, container);
+      }
+      break;
   }
+
+
+}
+
+function processFragment(vnode: any, container: any) {
+  mountChildren(vnode, container);
+}
+
+function processTextNode(vnode: any, container: any) {
+  const text = (vnode.el = document.createTextNode(vnode.children))
+  container.append(text);
 }
 
 function processElement(vnode, container) {
@@ -65,7 +86,7 @@ function processComponent(vnode: any, container: any) {
 }
 
 function mountComponent(vnode: any, container) {
-  
+
   const instance = createComponentInstance(vnode);
   setUpComponent(instance);
 
@@ -82,3 +103,5 @@ function setupRenderEffect(instance, vnode, container) {
   // 所有element mount
   vnode.el = subTree.el;
 }
+
+
