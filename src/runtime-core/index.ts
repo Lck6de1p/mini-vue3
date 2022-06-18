@@ -1,4 +1,4 @@
-export { createApp } from './createApp';
+export { createRenderer } from './renderer';
 
 export { h } from "./h";
 
