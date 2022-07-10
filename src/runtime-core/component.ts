@@ -1,3 +1,4 @@
+import { proxyRefs } from "../reactivity";
 import { shallowReadonly } from "../reactivity/reactive";
 import { emit } from "./componentEmit";
 import { initProps } from "./componentProps";
@@ -13,6 +14,7 @@ export function createComponentInstance(vnode, parent) {
     slots: {},
     providers: parent ? parent.providers : {},
     parent,
+    isMounted: false,
     emit: () => {}
   };
   component.emit = emit.bind(null, component) as any;
@@ -45,10 +47,8 @@ function setupStateForComponent(instance) {
 }
 
 function handleSetupResult(instance, setupResult) {
-  // function object
-  // TODO function
   if (typeof setupResult === "object") {
-    instance.setupState = setupResult;
+    instance.setupState = proxyRefs(setupResult);
   }
   finishComponentsSetUp(instance);
 }

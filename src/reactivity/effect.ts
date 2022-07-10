@@ -80,7 +80,10 @@ export function trigger(target, key) {
 }
 
 export function triggerEffects(dep) {
+  console.log('trigger', dep)
+  console.log('dep.size',dep.size)
   for (const effect of dep) {
+    console.log(effect, 'effect')
     if (effect.scheduler) {
       effect.scheduler()
     } else {
