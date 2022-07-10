@@ -15,7 +15,8 @@ export function createComponentInstance(vnode, parent) {
     providers: parent ? parent.providers : {},
     parent,
     isMounted: false,
-    emit: () => {}
+    subTree: {},
+    emit: () => { }
   };
   component.emit = emit.bind(null, component) as any;
   return component;
