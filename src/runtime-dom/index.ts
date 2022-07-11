@@ -6,13 +6,17 @@ function createElement(type) {
 }
 
 
-function patchProp(el, key, val) {
+function patchProp(el, key, oldVal, val) {
   const isOn = (key: string) => /^on[A-Z]/.test(key);
   if (isOn(key)) {
     const event = key.slice(2).toLocaleLowerCase();
     el.addEventListener(event, val)
   } else {
-    el.setAttribute(key, val);
+    if (val === undefined || val === null) {
+      el.removeAttribute(key, val);
+    } else {
+      el.setAttribute(key, val);
+    }
   }
 }
 

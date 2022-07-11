@@ -1,5 +1,6 @@
 // import { isObject } from "../shared/index";
 import { effect } from "../reactivity/effect";
+import { EMPTY_OBJ } from "../shared";
 import { ShapeFlags } from "../shared/ShapeFlags";
 import { createComponentInstance, setUpComponent } from "./component";
 import { createAppAPI } from "./createApp";
@@ -58,7 +59,30 @@ export function createRenderer(options) {
   }
   function patchElement(n1, n2, container) {
     console.log(n1, n2)
+    const oldProps = n1.props || EMPTY_OBJ;
+    const newProps = n2.props || EMPTY_OBJ;
+    const el = (n2.el = n1.el);
+    patchProp(el, oldProps, newProps);
   }
+
+  function patchProp(el, oldProps, newProps) {
+    if (oldProps !== newProps) {
+      for (const key in newProps) {
+        const newProp = newProps[key];
+        const oldProp = oldProps[key];
+        if (newProp !== oldProp) {
+          hostPatchProp(el, key, oldProp, newProp);
+        }
+      }
+      if (oldProps !== EMPTY_OBJ) {
+        for (const key in oldProps) {
+          if (!(key in newProps)) {
+            hostPatchProp(el, key, oldProps[key], null);
+          }
+        }
+      }
+    }
+  };
   function mountElement(vnode, container, parent) {
 
     // const el = (vnode.el = document.createElement(vnode.type));
@@ -78,7 +102,7 @@ export function createRenderer(options) {
       const val = props[key];
 
 
-      hostPatchProp(el, key, val);
+      hostPatchProp(el, key, null, val);
     }
 
     // container.append(el);
