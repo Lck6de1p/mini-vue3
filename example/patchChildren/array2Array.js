@@ -100,25 +100,42 @@ import { h, ref } from "../../lib/guide-mini-vue.esm.js";
 // a,b,(c,d,e,z),f,g
 // a,b,(d,c,y,e),f,g
 
+// const arrayDom1 = [
+//   h("div", { key: "A" }, "A"),
+//   h("div", { key: "B" }, "B"),
+//   h("div", { key: "C" }, "C"),
+//   h("div", { key: "D" }, "D"),
+//   h("div", { key: "E" }, "E"),
+//   h("div", { key: "Z" }, "Z"),
+//   h("div", { key: "F" }, "F"),
+//   h("div", { key: "G" }, "G"),
+// ];
+// const arrayDom2 = [
+//   h("div", { key: "A" }, "A"),
+//   h("div", { key: "B" }, "B"),
+//   h("div", { key: "D" }, "D"),
+//   h("div", { key: "C" }, "C"),
+//   h("div", { key: "Y" }, "Y"),
+//   h("div", { key: "E" }, "E"),
+//   h("div", { key: "F" }, "F"),
+//   h("div", { key: "G" }, "G"),
+// ];
+
+// fix b节点应该是move 而不是delete and create
+
 const arrayDom1 = [
   h("div", { key: "A" }, "A"),
-  h("div", { key: "B" }, "B"),
+  h("div", {}, "B"),
   h("div", { key: "C" }, "C"),
   h("div", { key: "D" }, "D"),
-  h("div", { key: "E" }, "E"),
-  h("div", { key: "Z" }, "Z"),
-  h("div", { key: "F" }, "F"),
-  h("div", { key: "G" }, "G"),
 ];
+
 const arrayDom2 = [
   h("div", { key: "A" }, "A"),
-  h("div", { key: "B" }, "B"),
-  h("div", { key: "D" }, "D"),
   h("div", { key: "C" }, "C"),
-  h("div", { key: "Y" }, "Y"),
-  h("div", { key: "E" }, "E"),
-  h("div", { key: "F" }, "F"),
-  h("div", { key: "G" }, "G"),
+  h("div", {}, "B"),
+
+  h("div", { key: "D" }, "D"),
 ];
 export const array2Array = {
   name: "array2Array",
