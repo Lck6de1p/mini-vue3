@@ -6,6 +6,7 @@ import { createComponentInstance, setUpComponent } from "./component";
 import { createAppAPI } from "./createApp";
 import { shouldUpdateComponent } from "./componentRenderUtils";
 import { Fragment, Text } from "./vnode";
+import { queueJobs } from "./scheduler";
 
 
 export function createRenderer(options) {
@@ -124,7 +125,6 @@ export function createRenderer(options) {
       e2--;
     }
 
-    console.log(i, e1, e2)
     // 新虚拟节点比老的多
     if (i > e1) {
       if (i <= e2) {
@@ -274,8 +274,7 @@ export function createRenderer(options) {
   }
   function updateComponent(n1, n2) {
     const instance = n2.component = n1.component
-    console.log(shouldUpdateComponent(n1, n2) , 'shouldUpdateComponent(n1, n2')
-    console.log(n1, n2)
+    console.log(n1, n2, 'n1n2')
     if (shouldUpdateComponent(n1, n2)) {
       instance.next = n2;
       instance.update();
@@ -323,7 +322,11 @@ export function createRenderer(options) {
         patch(prevSubTree, subTree, prevSubTree.el, instance, anchor);
 
       }
-
+    }, {
+      scheduler() {
+        // console.log('update')
+        queueJobs(instance.update);
+      }
     })
 
   }
