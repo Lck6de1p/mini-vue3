@@ -324,13 +324,10 @@ export function createRenderer(options) {
       }
     }, {
       scheduler() {
-        // console.log('update')
         queueJobs(instance.update);
       }
     })
-
   }
-
   return {
     createApp: createAppAPI(render)
   }
