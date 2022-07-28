@@ -31,11 +31,32 @@ describe('Parse', () => {
   describe('text', () => {
     test('simple text', () => {
       const ast = baseParse("this is a text");
-      
+
       expect(ast.children[0]).toStrictEqual({
         type: NodeTypes.TEXT,
-        tag: "this is a text"
+        content: "this is a text"
       })
+    })
+  })
+
+  test.only("happy path", () => {
+    const ast = baseParse("<div>hello,{{message}}</div>");
+    expect(ast.children[0]).toStrictEqual({
+      type: NodeTypes.ELEMENT,
+      tag: "div",
+      children: [
+        {
+          type: NodeTypes.TEXT,
+          content: "hello,"
+        },
+        {
+          type: NodeTypes.INTERPOLATION,
+          content: {
+            type: NodeTypes.SIMPLE_EXPRESSION,
+            content: "message",
+          }
+        }
+      ]
     })
   })
 })

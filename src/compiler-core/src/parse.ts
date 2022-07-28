@@ -7,7 +7,7 @@ const enum TagType {
 
 export function baseParse(content: string) {
   const context = createParseContext(content);
-  return createRoot(parseChildren(context))
+  return createRoot(parseChildren(context, ''))
 }
 
 function createRoot(children) {
@@ -16,36 +16,55 @@ function createRoot(children) {
   }
 }
 
-function parseChildren(context) {
+function parseChildren(context, parentTag) {
+  console.log('action')
   const nodes: any = [];
-  let node;
-  const s = context.source;
-  if (s.startsWith("{{")) {
-    node = parseInterpolation(context);
-  } else if (s[0] === ("<")) {
-    if (/[a-z]/i.test(s[1])) {
-      node = parseElement(context);
+  while (!isEnd(context, parentTag)) {
+    let node;
+    const s = context.source;
+    if (s.startsWith("{{")) {
+      node = parseInterpolation(context);
+    } else if (s[0] === ("<")) {
+      if (/[a-z]/i.test(s[1])) {
+        node = parseElement(context);
+      }
     }
+    if (!node) {
+      node = parseText(context);
+    }
+    nodes.push(node);
   }
-  if (!node) {
-    node = parseText(context);
-  }
-  nodes.push(node);
   return nodes
 }
 
+function isEnd(context, parentTag) {
+  if (parentTag && context.source.startsWith(`</${parentTag}>`)) {
+    return true;
+  }
+  return !context.source
+}
+
 function parseText(context) {
-  const content = parseTextData(context, context.source.length);
+  
+  let endIndex = context.source.length;
+  let endToken = "{{";
+  const index = context.source.indexOf(endToken)
+  if (index !== -1) {
+    endIndex = index;
+  }
+  const content = parseTextData(context, endIndex);
+  console.log(content, 'content')
   return {
     type: NodeTypes.TEXT,
-    tag: content
+    content
   }
 };
 
 function parseElement(context) {
   // 1. 解析tag
   // 2. 删除处理完成的代码
-  const element = parseTag(context, TagType.START);
+  const element: any = parseTag(context, TagType.START);
+  element.children = parseChildren(context, element.tag);
   parseTag(context, TagType.END);
   return element;
 }
@@ -73,7 +92,7 @@ function parseInterpolation(context) {
   const rawContent = parseTextData(context, rawContentLength);
   const content = rawContent.trim();
 
-  advanceBy(context, rawContentLength + closeDelimiter.length);
+  advanceBy(context, closeDelimiter.length);
 
   return {
     type: NodeTypes.INTERPOLATION,
@@ -96,6 +115,6 @@ function createParseContext(content: string) {
 
 function parseTextData(context, length) {
   const content = context.source.slice(0, length);
-  advanceBy(context, context.source.length);
+  advanceBy(context, length);
   return content
 }
