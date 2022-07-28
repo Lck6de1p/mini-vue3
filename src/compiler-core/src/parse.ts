@@ -27,9 +27,20 @@ function parseChildren(context) {
       node = parseElement(context);
     }
   }
+  if (!node) {
+    node = parseText(context);
+  }
   nodes.push(node);
   return nodes
 }
+
+function parseText(context) {
+  const content = parseTextData(context, context.source.length);
+  return {
+    type: NodeTypes.TEXT,
+    tag: content
+  }
+};
 
 function parseElement(context) {
   // 1. 解析tag
@@ -59,7 +70,7 @@ function parseInterpolation(context) {
 
   advanceBy(context, openDelimiter.length);
   const rawContentLength = closedIndex - openDelimiter.length;
-  const rawContent = context.source.slice(0, rawContentLength);
+  const rawContent = parseTextData(context, rawContentLength);
   const content = rawContent.trim();
 
   advanceBy(context, rawContentLength + closeDelimiter.length);
@@ -81,4 +92,10 @@ function createParseContext(content: string) {
   return {
     source: content
   }
+}
+
+function parseTextData(context, length) {
+  const content = context.source.slice(0, length);
+  advanceBy(context, context.source.length);
+  return content
 }
