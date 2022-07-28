@@ -17,7 +17,6 @@ function createRoot(children) {
 }
 
 function parseChildren(context, parentTag) {
-  console.log('action')
   const nodes: any = [];
   while (!isEnd(context, parentTag)) {
     let node;
