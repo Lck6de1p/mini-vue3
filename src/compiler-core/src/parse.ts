@@ -7,7 +7,7 @@ const enum TagType {
 
 export function baseParse(content: string) {
   const context = createParseContext(content);
-  return createRoot(parseChildren(context, ''))
+  return createRoot(parseChildren(context, []))
 }
 
 function createRoot(children) {
@@ -16,16 +16,16 @@ function createRoot(children) {
   }
 }
 
-function parseChildren(context, parentTag) {
+function parseChildren(context, ancestors) {
   const nodes: any = [];
-  while (!isEnd(context, parentTag)) {
+  while (!isEnd(context, ancestors)) {
     let node;
     const s = context.source;
     if (s.startsWith("{{")) {
       node = parseInterpolation(context);
     } else if (s[0] === ("<")) {
       if (/[a-z]/i.test(s[1])) {
-        node = parseElement(context);
+        node = parseElement(context, ancestors);
       }
     }
     if (!node) {
@@ -36,21 +36,35 @@ function parseChildren(context, parentTag) {
   return nodes
 }
 
-function isEnd(context, parentTag) {
-  if (parentTag && context.source.startsWith(`</${parentTag}>`)) {
-    return true;
+function isEnd(context, ancestors) {
+
+  const s = context.source;
+  if (s.startsWith("</")) {
+    for (let i = ancestors.length - 1; i >= 0; i--) {
+      const tag = ancestors[i].tag;
+      if (startsWithEndTagOpen(s, tag)) {
+        return true;
+      }
+    }
   }
-  return !context.source
+  return !s;
+  // if (parentTag && context.source.startsWith(`</${parentTag}>`)) {
+  //   return true;
+  // }
+  // return !context.source
 }
 
 function parseText(context) {
-  
+
   let endIndex = context.source.length;
-  let endToken = "{{";
-  const index = context.source.indexOf(endToken)
-  if (index !== -1) {
-    endIndex = index;
+  let endTokens = ["{{", '</'];
+  for (const endToken of endTokens) {
+    const index = context.source.indexOf(endToken)
+    if (index !== -1 && index < endIndex) {
+      endIndex = index;
+    }
   }
+
   const content = parseTextData(context, endIndex);
   console.log(content, 'content')
   return {
@@ -59,13 +73,23 @@ function parseText(context) {
   }
 };
 
-function parseElement(context) {
+function parseElement(context, ancestors) {
   // 1. 解析tag
   // 2. 删除处理完成的代码
   const element: any = parseTag(context, TagType.START);
-  element.children = parseChildren(context, element.tag);
-  parseTag(context, TagType.END);
+  ancestors.push(element);
+  element.children = parseChildren(context, ancestors);
+  ancestors.pop();
+  if (startsWithEndTagOpen(context.source, element.tag)) {
+    parseTag(context, TagType.END);
+  } else {
+    throw Error(`缺少结束标签：${element.tag}`)
+  }
   return element;
+}
+
+function startsWithEndTagOpen(source, tag) {
+  return source.startsWith('</') && source.slice(2, 2 + tag.length) === tag;
 }
 
 function parseTag(context, type: TagType) {
