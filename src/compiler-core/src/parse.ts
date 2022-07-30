@@ -12,7 +12,8 @@ export function baseParse(content: string) {
 
 function createRoot(children) {
   return {
-    children
+    children,
+    type: NodeTypes.ROOT
   }
 }
 
