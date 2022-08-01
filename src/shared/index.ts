@@ -6,6 +6,8 @@ export const isObject = (e) => {
   return e !== null && typeof e === 'object'
 }
 
+export const isString = (e) => typeof e === 'string'
+
 export const hasChanged = (newValue, oldValue) => {
   return !Object.is(newValue, oldValue)
 }
