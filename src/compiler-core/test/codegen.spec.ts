@@ -42,8 +42,8 @@ return function render(_ctx, _cache){return _toDisplayString(_ctx.message)}"
       });
       const { code } = generate(ast);
       expect(code).toMatchInlineSnapshot(`
-"const { toDisplayString: _toDisplayString, createElementVnode: _createElementVnode } = Vue
-return function render(_ctx, _cache){return _createElementVnode('div', null, 'hi, ' + _toDisplayString(_ctx.message))}"
+"const { toDisplayString: _toDisplayString, createElementVNode: _createElementVNode } = Vue
+return function render(_ctx, _cache){return _createElementVNode('div', null, 'hi, ' + _toDisplayString(_ctx.message))}"
 `)
     })
 })
